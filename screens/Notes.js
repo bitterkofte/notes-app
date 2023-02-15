@@ -67,7 +67,7 @@ const Notes = ({navigation}) => {
     }
 
     function renderTile({item}) {
-        function pressHandler() {navigation.navigate("ViewNote", {noteId: item.id, t: item.title, d: item.details});}
+        function pressHandler() {navigation.navigate("ViewNote", {noteId: item.id, t: item.title, d: item.details, time: item.createdAt});}
         // console.log(item.title);
         return <NoteTile 
                 title={item.title}
@@ -80,8 +80,8 @@ const Notes = ({navigation}) => {
         <View style={styles.pickerContainer}>
           <Picker changeOrder={changeOrder} />
         </View>
-        <FlatList data={notes} 
-          keyExtractor={(item) => item.id} 
+        <FlatList data={notes}
+          keyExtractor={(item) => item.id}
           renderItem={renderTile}
           numColumns={2}
           style={styles.flatlist} />

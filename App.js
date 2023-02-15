@@ -34,6 +34,7 @@ export default function App() {
     SplashScreen.hideAsync();
   }
   //FONTS
+  
   const Stack = createNativeStackNavigator();
 
   return (
