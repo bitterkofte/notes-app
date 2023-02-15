@@ -1,18 +1,22 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
-import React from 'react'
+import { MaterialIcons } from '@expo/vector-icons'; 
+import React, { useState } from 'react'
+import FancyAlert from '../components/FancyAlert';
 
 const ViewNote = ({route, navigation}) => {
-  // const nId = route.params.noteId;
+  const [visible, setVisible] = useState(false);
 
-  // const showRelatedNote = notes.filter((note) => {
-  //   return note.id.indexOf(catgId) >= 0;
-  //   //categoryIds is an element in the MEALS object
-  // });
   function editHandler() {
     navigation.navigate('EditNote',{id: route.params.noteId, t: route.params.t, d: route.params.d});
   }
+
+  function visibility(s) {
+    setVisible(s);
+    console.log(s);
+  }
+
 
   return (
     <View style={styles.noteContainer}>
@@ -24,7 +28,15 @@ const ViewNote = ({route, navigation}) => {
             <Text style={styles.details}>{route.params.d}</Text>
         </View>
 
-        <View style={styles.buttonContainer}>
+        {/* MODAL */}
+        <FancyAlert visible={visible} visibility={visibility} id={route.params.noteId} />
+        <View style={styles.deleteContainer}>
+          <Pressable android_ripple={{color: '#d9d9d9'}} onPress={() =>  visibility(true)}>
+            <MaterialIcons style={styles.icon} name='delete' size={40}/>
+          </Pressable>
+        </View>
+
+        <View style={styles.editContainer}>
           <Pressable android_ripple={{color: '#d9d9d9'}} onPress={editHandler}>
             <MaterialCommunityIcons style={styles.icon} name='pencil' size={40}/>
           </Pressable>
@@ -62,7 +74,17 @@ const styles = StyleSheet.create({
       textAlign: 'justify',
     },
 
-    buttonContainer: {
+    deleteContainer: {
+      position: 'absolute',
+      bottom: 10,
+      left: 10,
+      backgroundColor: '#ff3b3b',
+      borderRadius: 25,
+      elevation: 5,
+      overflow: 'hidden',
+    },
+
+    editContainer: {
       position: 'absolute',
       bottom: 10,
       right: 10,

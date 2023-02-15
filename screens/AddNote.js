@@ -3,7 +3,7 @@ import { Entypo } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import React, {useState} from 'react'
 
-import { addDoc } from 'firebase/firestore';
+import { addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, colRef } from '../firebase';
 
 const AddNote = ({navigation}) => {
@@ -15,6 +15,7 @@ const AddNote = ({navigation}) => {
     addDoc(colRef, {
       title: title,
       details: details,
+      createdAt: serverTimestamp()
     })
     .then(() => {
       setIsSent(true);
