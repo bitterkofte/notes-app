@@ -16,7 +16,7 @@ const FancyAlert = ({visible, visibility, id}) => {
     })
   }
 
-  console.log(id);
+  // console.log(id);
 
 
 

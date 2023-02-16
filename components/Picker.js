@@ -1,15 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import DropDownPicker from 'react-native-dropdown-picker';
+import { AntDesign } from '@expo/vector-icons'; 
 
 const Picker = ({changeOrder}) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
-    {label: 'Title Asc.', value: 'titleA'},
-    {label: 'Title Des.', value: 'titleD'},
-    {label: 'Time Asc.', value: 'timeA'},
-    {label: 'Time Des.', value: 'timeD'},
+    {label: 'Title', value: 'titleA', icon: () => <AntDesign name="arrowup" size={20} color="black" />},
+    {label: 'Title', value: 'titleD', icon: () => <AntDesign name="arrowdown" size={20} color="black" />},
+    {label: 'Time', value: 'timeA', icon: () => <AntDesign name="arrowup" size={20} color="black" />},
+    {label: 'Time', value: 'timeD', icon: () => <AntDesign name="arrowdown" size={20} color="black" />},
   ]);
 
   useEffect(() => {
@@ -26,18 +27,29 @@ const Picker = ({changeOrder}) => {
         setValue={setValue}
         setItems={setItems}
         placeholder="Sort by..."
+        placeholderStyle={{
+          fontFamily: 'SofiaProBold',
+        }}
         style={styles.picker}
         textStyle={{
           fontSize: 16,
           fontFamily: 'Sofia'
         }}
-        // containerStyle={styles.container}
-        // disabledStyle={{
-        //   opacity: 0.5
-        // }}
         labelStyle={{
           // fontWeight: "bold"
           // borderWidth: 0,
+        }}
+        listItemContainer={{
+          height: 100
+        }}
+        dropDownContainerStyle={{
+          // backgroundColor: "#b35252",
+          borderWidth: 0,
+          elevation: 3,
+        }}
+        selectedItemContainerStyle={{
+          backgroundColor: "#d1f4ff"
+          // borderWidth: 1,
         }}
       />
     </View>
@@ -48,12 +60,9 @@ export default Picker
 
 const styles = StyleSheet.create({
   picker: {
+    // width: '40%',
     borderWidth: 0,
     elevation: 3,
-    backgroundColor: '#f5edff'
+    // backgroundColor: '#f5edff'
   },
-  container: {
-    borderWidth: 0,
-    backgroundColor: '#9b4ff9'
-  }
 })

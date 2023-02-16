@@ -14,18 +14,29 @@ const ViewNote = ({route, navigation}) => {
 
   function visibility(s) {
     setVisible(s);
-    console.log(s);
+    // console.log(s);
     // console.log(route.params.time);
     // console.log(new Date(route.params.time.seconds*1000));
   }
 
   let day = '';
 
-  useEffect(() => {
-    // day = new Date(route.params.time.seconds*1000);
-    day = new Date(route.params.time.toDate());
-    console.log(day);
-  }, [])
+  day = new Date(route.params.time.seconds*1000);
+  // dayy = day.getDate() + '/' + (day.getMonth() + 1) + '/' + day.getFullYear();
+  // console.log(dayy, '2');
+  let saat = day.getHours();
+  let dakika = day.getMinutes();
+  let gun = day.getDate();
+  let ay = (day.getMonth() + 1);
+  let yil = day.getFullYear();
+
+  if (gun < 10) {
+    gun = '0' + gun;
+  } else  if (ay < 10) {
+    ay = `0${ay}`;
+  }
+  let zaman = `${saat}:${dakika}`;
+  let tarih = `${gun}/${ay}/${yil}`;
 
 
   return (
@@ -48,8 +59,10 @@ const ViewNote = ({route, navigation}) => {
           </View>
 
           <View style={styles.editTimeContainer}>
-            <View>
-              <Text style={styles.editTime}>last edited at {day}</Text>
+            <View style={{alignItems: 'center'}}>
+              <Text style={[styles.editTime, {fontFamily: 'SofiaProBold'}]}>Created at</Text>
+              {/* <Text style={styles.editTime}>{zaman}</Text> */}
+              <Text style={styles.editTime}>{zaman} - {tarih}</Text>
             </View>
           </View>
 
@@ -127,5 +140,6 @@ const styles = StyleSheet.create({
     },
     editTime: {
       fontFamily: 'Sofia',
+      color: '#7c7c7c',
     },
 })

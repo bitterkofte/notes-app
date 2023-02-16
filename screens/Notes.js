@@ -15,7 +15,7 @@ const Notes = ({navigation}) => {
 
     function changeOrder(o) {
       setValue(o);
-      console.log(o, 'hasan');
+      // console.log(o, 'hasan');
     }
     
     let q = query(colRef, orderBy('title', 'asc'));
@@ -77,9 +77,14 @@ const Notes = ({navigation}) => {
 
   return (
       <View style={styles.flatlistContainer}>
-        <View style={styles.pickerContainer}>
-          <Picker changeOrder={changeOrder} />
+
+        <View style={styles.headerContainer}>
+          <Text style={styles.header}>Welcome</Text>
+          <View style={styles.pickerContainer}>
+            <Picker changeOrder={changeOrder} />
+          </View>
         </View>
+
         <FlatList data={notes}
           keyExtractor={(item) => item.id}
           renderItem={renderTile}
@@ -104,8 +109,20 @@ const styles = StyleSheet.create({
       // backgroundColor: '#ffa46c',
     },
 
-    pickerContainer: {
+    headerContainer: {
       margin: 10,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    header: {
+      fontFamily: 'SofiaProBold',
+      fontSize: 23,
+      color: '#488899',
+    },
+    pickerContainer: {
+      width: '35%',
+      // flexDirection: 'row',
     },
 
     buttonContainer: {
