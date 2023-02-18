@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     noteContainer: {
         flex: 1,
         margin: 15,
+        // backgroundColor: '#FFFFFF',
     },
 
     titleContainer: {

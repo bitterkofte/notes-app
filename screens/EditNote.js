@@ -1,13 +1,17 @@
 import { StyleSheet, Text, View, Pressable, TextInput } from 'react-native'
 import { Entypo } from '@expo/vector-icons'; 
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import ColorPalette from '../components/ColorPalette';
 
 const EditNote = ({route, navigation}) => {
   const [title, setTitle] = useState(route.params.t);
   const [details, setDetails] = useState(route.params.d);
+
+  const { color } = useSelector((state) => state.colorizer);
 
   const saveHandler = async () => {
     try{
@@ -16,6 +20,7 @@ const EditNote = ({route, navigation}) => {
       await updateDoc(docRef, {
         title: title,
         details: details,
+        color: color,
       })
       .then(() => {
         navigation.pop(2);
@@ -24,7 +29,6 @@ const EditNote = ({route, navigation}) => {
     } catch (err) {
       console.error(err);
     }
-
   }
 
   return (
@@ -40,7 +44,8 @@ const EditNote = ({route, navigation}) => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <Pressable  android_ripple={{color: '#d9d9d9'}} onPress={saveHandler}>
+          <ColorPalette />
+          <Pressable style={styles.button} android_ripple={{color: '#d9d9d9'}} onPress={saveHandler}>
             <Entypo style={styles.icon} name='save' size={40}/>
           </Pressable>
         </View>
@@ -80,8 +85,13 @@ const styles = StyleSheet.create({
 
     buttonContainer: {
       position: 'absolute',
+      width: '100%',
       bottom: 10,
-      right: 10,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      // backgroundColor: '#b92929',
+    },
+    button: {
       backgroundColor: '#44dd51',
       borderRadius: 25,
       elevation: 5,

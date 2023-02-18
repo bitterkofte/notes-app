@@ -1,48 +1,21 @@
-import { StatusBar } from 'expo-status-bar';
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import { useState, useEffect } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native'
+import React from 'react'
+
+// import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Provider } from 'react-redux';
 
-import { addDoc } from 'firebase/firestore';
-import { db, colRef } from './firebase';
+import Notes from '../screens/Notes';
+import ViewNote from '../screens/ViewNote';
+import EditNote from '../screens/EditNote';
+import AddNote from '../screens/AddNote';
+import store from '../redux/store';
 
-import Notes from './screens/Notes';
-import ViewNote from './screens/ViewNote';
-import EditNote from './screens/EditNote';
-import AddNote from './screens/AddNote';
-import store from './redux/store';
-// import NavigationCenter from './components/NavigationCenter';
-
-export default function App() {
-  //FONTS
-  const [fontsLoaded] = useFonts({
-    'Sofia': require('./assets/fonts/Sofia-Pro-Regular.otf'),
-    'SofiaProBold': require('./assets/fonts/Sofia-Pro-Bold.otf'),
-  });
-
-  useEffect(() => {
-    async function prepare() {
-      await SplashScreen.preventAutoHideAsync();
-    }
-    prepare();
-  }, []);
-
-  if (!fontsLoaded) {
-    return undefined;
-  } else {
-    SplashScreen.hideAsync();
-  }
-  //FONTS
-  
+const NavigationCenter = () => {
   const Stack = createNativeStackNavigator();
-
   return (
-    <Provider store={store}>
-    <NavigationContainer>
+    <View>
+      <NavigationContainer>
       <Stack.Navigator screenOptions={defaultOptions}>
         <Stack.Screen name='Notes' component={Notes} options={notesOptions} />
         <Stack.Screen name='ViewNote' component={ViewNote} options={viewNotesOptions} />
@@ -50,10 +23,11 @@ export default function App() {
         <Stack.Screen name='AddNote' component={AddNote} options={addNotesOptions} />
       </Stack.Navigator>
     </NavigationContainer>
-      {/* <NavigationCenter /> */}
-    </Provider>
-  );
+    </View>
+  )
 }
+
+export default NavigationCenter
 
 const defaultOptions = {
   title: "My Notes",
@@ -85,6 +59,4 @@ const addNotesOptions = {
   contentStyle: {backgroundColor: '#dec3ff'}
 }
 
-const styles = StyleSheet.create({
-  
-});
+const styles = StyleSheet.create({})

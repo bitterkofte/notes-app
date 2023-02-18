@@ -1,9 +1,12 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native'
 import React from 'react'
+import { useSelector } from 'react-redux'
 
 const NoteTile = ({title, det, pressFunc}) => {
+    const { color } = useSelector((state) => state.colorizer);
+    // const color = useSelector((state) => state.colorizer.color);
   return (
-    <View style={styles.tileContainer} >
+    <View style={[styles.tileContainer, {backgroundColor: color.bg}]} >
         <Pressable  android_ripple={{color: '#cccccc'}} 
                     style={styles.button}
                     onPress={pressFunc} >
@@ -28,6 +31,7 @@ const styles = StyleSheet.create({
         elevation: 5,
         overflow: 'hidden',
         backgroundColor: '#ffffff'
+        // backgroundColor: color.bg,
     },
 
     button: {
