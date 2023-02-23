@@ -1,5 +1,5 @@
 import { FlatList, StyleSheet, Text, View, ActivityIndicator, ScrollView, Pressable } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useLayoutEffect } from 'react'
 import { MaterialIcons } from '@expo/vector-icons'; 
 
 import { getDocs, onSnapshot, orderBy, query } from 'firebase/firestore';
@@ -7,6 +7,7 @@ import { db, colRef } from '../firebase';
 
 import NoteTile from '../components/NoteTile';
 import Picker from '../components/Picker';
+import IconButton from '../components/IconButton';
 
 const Notes = ({navigation}) => {
     const [notes, setNotes] = useState([]);
@@ -32,15 +33,18 @@ const Notes = ({navigation}) => {
         break;
       case 'timeD':
         q = query(colRef, orderBy('createdAt', 'desc'));
-        console.log('oldu');
+        // console.log('oldu');
         break;
 
       default:
         q = query(colRef, orderBy('title', 'asc'));
     }
 
-    // const q = query(colRef, orderBy('title', 'asc'));
-    // const q = query(colRef, orderBy('createdAt', 'asc'));
+    useLayoutEffect(() => {
+      navigation.setOptions({
+        headerRight: () => {return <IconButton size={35} onPress={()=>navigation.navigate('User')}/>}
+      });
+    }, [navigation, ])
 
     useEffect(() => {
         const subscriber = onSnapshot(q, (snapshot) => {
