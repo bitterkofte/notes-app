@@ -8,7 +8,7 @@ import {
 import { auth } from '../firebase'
 
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db, colRef } from '../firebase';
+import { db, collUser } from '../firebase';
 
 const SignIn = ({navigation}) => {
   const [register, setRegister] = useState(true);
@@ -17,40 +17,16 @@ const SignIn = ({navigation}) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  // const signUp = async () => {
-  //   try{
-  //     const response = await createUserWithEmailAndPassword(auth, email, password)
-  //     await response.user.updateProfile({displayName: name});
-  //     console.log(user.displayName)
-  //     navigation.navigate('Notes');
-  //   } catch(err) {
-  //     console.log(err.message)
-  //     setError(err.message);
-  //   }
-  // }
   const user = auth.currentUser;
 
-  // function signUp() {
-  //   createUserWithEmailAndPassword(auth, email, password)
-  //   .then(cred => {
-  //     // console.log('user created:', cred.user)
-  //     // user.displayName = name;
-  //     // console.log('ONUN ADI: ',user.displayName);
-  //     updateProfile(user, {displayName: name}).then(() => console.log(user.displayName)).catch((err) => console.log('HATA',err));
-  //     navigation.navigate('Notes');
-  //   })
-  //   .catch(err => {
-  //     console.log(err.message)
-  //     setError(err.message);
-  //   })
-  // }
-  const collUser = collection(db, 'users');
+  // const collUser = collection(db, 'users');
   function signUp() {
     createUserWithEmailAndPassword(auth, email, password)
     .then(() => {
       addDoc(collUser, {
         name: name,
         email: email,
+        uid: auth.currentUser.uid,
       })
       navigation.navigate('Notes');
     })
@@ -63,7 +39,7 @@ const SignIn = ({navigation}) => {
   function logIn() {
     signInWithEmailAndPassword(auth, email, password)
     .then(cred => {
-      console.log('user logged in:', cred.user)
+      console.log('user logged in:', cred.user.email)
       navigation.navigate('Notes');
     })
     .catch(err => {

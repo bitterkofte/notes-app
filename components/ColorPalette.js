@@ -7,7 +7,7 @@ import ColorThemes from '../assets/themes/ColorThemes'
 const ColorPalette = () => {
   const { color } = useSelector((state) => state.colorizer);
   const dispatch = useDispatch();
-  console.log(color.nav);
+  // console.log(color.nav);
   return (
     <View style={styles.paletteContainer}>
       <Pressable style={[styles.color, {backgroundColor: ColorThemes.myYellowL}]} android_ripple={{color: '#d9d9d9'}} onPress={() => dispatch(yellow())} />

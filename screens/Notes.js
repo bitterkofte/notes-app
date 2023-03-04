@@ -2,72 +2,122 @@ import { FlatList, StyleSheet, Text, View, ActivityIndicator, ScrollView, Pressa
 import React, { useState, useEffect, useLayoutEffect } from 'react'
 import { MaterialIcons } from '@expo/vector-icons'; 
 
-import { getDocs, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { db, colRef } from '../firebase';
+import { getDocs, onSnapshot, orderBy, query, where } from 'firebase/firestore';
+import { db, collUser, auth } from '../firebase';
 
 import NoteTile from '../components/NoteTile';
 import Picker from '../components/Picker';
 import IconButton from '../components/IconButton';
 
 const Notes = ({navigation}) => {
-    const [notes, setNotes] = useState([]);
+    // const [notes, setNotes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [value, setValue] = useState('');
+
+    const [users, setUsers] = useState([]);
+    const [user, setUser] = useState([]);
+    const [data, setData] = useState([]);
+    // const [zaman, setZaman] = useState(0);
 
     function changeOrder(o) {
       setValue(o);
       // console.log(o, 'hasan');
     }
-    
-    let q = query(colRef, orderBy('title', 'asc'));
+    // let zaman = user.notes.time;
+    // let q = query(colRef, orderBy('title', 'asc'));
 
-    switch (value) {
-      case 'titleA':
-        q = query(colRef, orderBy('title', 'asc'));
-        break;
-      case 'titleD':
-        q = query(colRef, orderBy('title', 'desc'));
-        break;
-      case 'timeA':
-        q = query(colRef, orderBy('createdAt', 'asc'));
-        break;
-      case 'timeD':
-        q = query(colRef, orderBy('createdAt', 'desc'));
-        // console.log('oldu');
-        break;
+    // switch (value) {
+    //   case 'titleA':
+    //     q = query(colRef, orderBy('title', 'asc'));
+    //     break;
+    //   case 'titleD':
+    //     q = query(colRef, orderBy('title', 'desc'));
+    //     break;
+    //   case 'timeA':
+    //     let sonuc = zaman.sort((a,b)=> a.time - b.time);
+    //     console.log(sonuc);
+    //     break;
+    //   case 'timeD':
+    //     zaman.sort((a,b)=> b.time - a.time);
+    //     break;
 
-      default:
-        q = query(colRef, orderBy('title', 'asc'));
-    }
+    //   default:
+    //     // q = query(colRef, orderBy('title', 'asc'));
+    // }
 
     useLayoutEffect(() => {
       navigation.setOptions({
-        headerRight: () => {return <IconButton size={35} onPress={()=>navigation.navigate('User')}/>}
+        headerRight: () => {return <IconButton name="account-circle" size={35} onPress={()=>navigation.navigate('User', {email: user.email})}/>},
+        headerLeft: () => {return <IconButton name="arrow-circle-down" size={35} onPress={recieve}/>}
       });
     }, [navigation, ])
 
-    useEffect(() => {
-        const subscriber = onSnapshot(q, (snapshot) => {
-            const notes = [];
+    const q = query(collUser, where("email", "==", auth.currentUser.email))
+
+    useEffect(()=>{
+      const subscriber = onSnapshot(q, (snapshot) => {
+        snapshot.docs.forEach(doc => {
+          setUser({...doc.data(), id: doc.id});
+        });
+        setLoading(false);
+      });
+      return () => subscriber();
+    },[user])
+
+    function recieve() {
+      console.log('User: ',auth.currentUser.email)
+      // onSnapshot(q, (snapshot) => {
+      //   snapshot.docs.forEach(doc => {
+      //     setUser({...doc.data(), id: doc.id});
+      //   });
+        console.log('Documents: ',user);
+        console.log('Notes: ',user.notes);
+        setLoading(false);
+      // });
+    }
+
+
+    // useEffect(() => {
+    //     const subscriber = onSnapshot(q, (snapshot) => {
+    //         const notes = [];
       
-            snapshot.docs.forEach(doc => {
-              notes.push({...doc.data(), id: doc.id});
-            });
+    //         snapshot.docs.forEach(doc => {
+    //           notes.push({...doc.data(), id: doc.id});
+    //         });
       
-            setNotes(notes);
-            setLoading(false);
-          });
+    //         setNotes(notes);
+    //         setLoading(false);
+    //       });
       
-        // Unsubscribe from events when no longer in use
-        return () => subscriber();
-      }, [value]);
+    //     // Unsubscribe from events when no longer in use
+    //     return () => subscriber();
+    //   }, [value]);
+
+
+    // //GETTING USER DATA
+    // useEffect(() => {
+    //   const subscriber = onSnapshot(q, (snapshot) => {
+    //       snapshot.docs.forEach(doc => {
+    //         setUser({...doc.data(), id: doc.id});
+    //       });
+    //       // setUsers(user);
+    //       // setData(users[0].notes);
+    //       // console.log('data: ',users[0]);
+    //       // users.map((a)=>console.log('KK: ',a));
+    //       console.log('not: ',user);
+    //       setLoading(false);
+    //     });
+
+    //   // Unsubscribe from events when no longer in use
+    //   return () => subscriber();
+    // }, [user]);
     
     if (loading) {
-        return <ActivityIndicator size="large" color="#0000ff" />;
+        return <ActivityIndicator style={{flex:1, justifyContent: 'center', alignItems: 'center'}} size="large" color="#0000ff" />;
     }
 
     function addHandler () {
-      navigation.navigate('AddNote');
+      navigation.navigate('AddNote', {docId: user.id, notes: user.notes});
     }
 
     function renderTile({item}) {
@@ -89,7 +139,7 @@ const Notes = ({navigation}) => {
           </View>
         </View>
 
-        <FlatList data={notes}
+        <FlatList data={user.notes}
           keyExtractor={(item) => item.id}
           renderItem={renderTile}
           numColumns={2}

@@ -2,32 +2,32 @@ import { Button, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 
 import { onSnapshot, collection, query, where } from 'firebase/firestore'
-import { auth, db } from '../firebase'
+import { auth, db, collUser } from '../firebase'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import IconButton from '../components/IconButton'
 
-const User = ({navigation}) => {
-  const [users, setUsers] = useState([]);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+const User = ({navigation, route}) => {
+  // const [users, setUsers] = useState([]);
+  // const [name, setName] = useState('');
+  // const [email, setEmail] = useState('');
 
-  const collUser = collection(db, 'users');
-  const q = query(collUser, where("email", "==", auth.currentUser.email))
+  // // const collUser = collection(db, 'users');
+  // const q = query(collUser, where("email", "==", auth.currentUser.email))
 
-  //GETTING USER DATA
-  useEffect(() => {
-    const subscriber = onSnapshot(q, (snapshot) => {
-        snapshot.docs.forEach(doc => {
-          users.push({...doc.data(), id: doc.id});
-        });
-        setUsers(users);
-        // console.log(users);
-        console.log('5')
-      });
+  // //GETTING USER DATA
+  // useEffect(() => {
+  //   const subscriber = onSnapshot(q, (snapshot) => {
+  //       snapshot.docs.forEach(doc => {
+  //         users.push({...doc.data(), id: doc.id});
+  //       });
+  //       setUsers(users);
+  //       // console.log(users);
+  //       console.log('5')
+  //     });
 
-    // Unsubscribe from events when no longer in use
-    return () => subscriber();
-  }, [users]);
+  //   // Unsubscribe from events when no longer in use
+  //   return () => subscriber();
+  // }, [users]);
 
   //SIGN OUT
   function signOutHandler() {
@@ -40,14 +40,14 @@ const User = ({navigation}) => {
       // console.log(err.message)
     })
   }
-  const u = users[0];
+  // const u = users[0];
   // const name1 = u.name.toUpperCase();
   // const email1 = u.email;
   return (
     <View style={styles.userContainer}>
       <IconButton size={70} />
-      <Text style={styles.text}>{u.name.toUpperCase()}</Text>
-      <Text style={styles.text}>{u.email}</Text>
+      <Text style={styles.text}>{route.params.email}</Text>
+      <Text style={styles.text}>yukarda</Text>
       <View style={styles.bc}>
         <Button title='Delete Account' color={'red'} onPress={signOutHandler} />
         <Button title='Sign Out' onPress={signOutHandler} />

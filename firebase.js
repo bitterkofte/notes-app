@@ -3,7 +3,15 @@ import { initializeApp } from "firebase/app";
 import {
     getFirestore, collection
   } from 'firebase/firestore'
-import { getAuth } from "firebase/auth";
+  
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// import { getAuth } from "firebase/auth";
+
+import {
+  initializeAuth,
+  getReactNativePersistence
+} from 'firebase/auth/react-native';
 
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import {getReactNativePersistence, initializeAuth} from 'firebase/auth/react-native';
@@ -29,9 +37,14 @@ const db = getFirestore()
 const colRef = collection(db, 'notes')
 
 //Authentication
-const auth = getAuth();
+// const auth = getAuth();
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage)
+});
 
-export { db, colRef, auth };
+const collUser = collection(db, 'users');
+
+export { db, collUser, auth };
 
 // initializeAuth(app, {
 //   persistence: getReactNativePersistence(AsyncStorage)
