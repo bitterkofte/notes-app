@@ -7,23 +7,18 @@ import FancyAlert from '../components/FancyAlert';
 
 const ViewNote = ({route, navigation}) => {
   const [visible, setVisible] = useState(false);
+  const {t,d,time,docId} = route.params;
 
   function editHandler() {
-    navigation.navigate('EditNote',{id: route.params.noteId, t: route.params.t, d: route.params.d});
+    navigation.navigate('EditNote', {time: time, t: t, d: d, docId: docId});
   }
 
   function visibility(s) {
     setVisible(s);
-    // console.log(s);
-    // console.log(route.params.time);
-    // console.log(new Date(route.params.time.seconds*1000));
   }
 
   let day = '';
-
-  day = new Date(route.params.time.seconds*1000);
-  // dayy = day.getDate() + '/' + (day.getMonth() + 1) + '/' + day.getFullYear();
-  // console.log(dayy, '2');
+  day = new Date(time);
   let saat = day.getHours();
   let dakika = day.getMinutes();
   let gun = day.getDate();
@@ -32,8 +27,10 @@ const ViewNote = ({route, navigation}) => {
 
   if (gun < 10) {
     gun = '0' + gun;
-  } else  if (ay < 10) {
-    ay = `0${ay}`;
+  } if (ay < 10) {
+    ay = '0' + ay;
+  } if (dakika < 10) {
+    dakika = '0' + dakika;
   }
   let zaman = `${saat}:${dakika}`;
   let tarih = `${gun}/${ay}/${yil}`;
@@ -42,15 +39,15 @@ const ViewNote = ({route, navigation}) => {
   return (
     <View style={styles.noteContainer}>
         <View style={styles.titleContainer}>
-            <Text style={styles.title}>{route.params.t}</Text>
+            <Text style={styles.title}>{t}</Text>
         </View>
 
         <View style={styles.detailsContainer}>
-            <Text style={styles.details}>{route.params.d}</Text>
+            <Text style={styles.details}>{d}</Text>
         </View>
 
         {/* MODAL */}
-        <FancyAlert visible={visible} visibility={visibility} id={route.params.noteId} />
+        <FancyAlert visible={visible} visibility={visibility} id={time} />
         <View style={styles.bottomContainer}>
           <View style={styles.deleteContainer}>
             <Pressable android_ripple={{color: '#d9d9d9'}} onPress={() =>  visibility(true)}>

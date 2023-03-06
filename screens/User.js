@@ -1,5 +1,5 @@
 import { Button, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 import { onSnapshot, collection, query, where } from 'firebase/firestore'
 import { auth, db, collUser } from '../firebase'
@@ -7,28 +7,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth'
 import IconButton from '../components/IconButton'
 
 const User = ({navigation, route}) => {
-  // const [users, setUsers] = useState([]);
-  // const [name, setName] = useState('');
-  // const [email, setEmail] = useState('');
-
-  // // const collUser = collection(db, 'users');
-  // const q = query(collUser, where("email", "==", auth.currentUser.email))
-
-  // //GETTING USER DATA
-  // useEffect(() => {
-  //   const subscriber = onSnapshot(q, (snapshot) => {
-  //       snapshot.docs.forEach(doc => {
-  //         users.push({...doc.data(), id: doc.id});
-  //       });
-  //       setUsers(users);
-  //       // console.log(users);
-  //       console.log('5')
-  //     });
-
-  //   // Unsubscribe from events when no longer in use
-  //   return () => subscriber();
-  // }, [users]);
-
+  const {user} =  route.params;
   //SIGN OUT
   function signOutHandler() {
     signOut(auth)
@@ -40,14 +19,30 @@ const User = ({navigation, route}) => {
       // console.log(err.message)
     })
   }
-  // const u = users[0];
-  // const name1 = u.name.toUpperCase();
-  // const email1 = u.email;
+
+  let label = user.name;
+  // console.log(user)
+  // label = 'hasan'
+  label = label.charAt(0).toUpperCase() + label.slice(1);
+
+  let email = user.email;
+  // email = 'hasan@gmail.com'
+
+  let arr = user.notes;
+  // arr=[1,2,3,4,5,6,7,8];
+  let length = arr.length
+
   return (
     <View style={styles.userContainer}>
-      <IconButton size={70} />
-      <Text style={styles.text}>{route.params.email}</Text>
-      <Text style={styles.text}>yukarda</Text>
+      <View style={styles.bio}>
+        <IconButton name="account-circle" size={70} style={styles.pp} />
+        <View style={styles.cred}>
+          <Text style={[styles.text, {marginBottom: 4, fontSize: 18}]}>{label}</Text>
+          <Text style={[styles.text, {color: '#565656'}]}>{email}</Text>
+        </View>
+      </View>
+      <Text style={[styles.text, {marginTop: 20}]}>You have currently <Text style={styles.bold}>{length}</Text> notes.</Text>
+      
       <View style={styles.bc}>
         <Button title='Delete Account' color={'red'} onPress={signOutHandler} />
         <Button title='Sign Out' onPress={signOutHandler} />
@@ -66,10 +61,32 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 
+  bio: {
+    flexDirection: 'row',
+    width: '90%',
+    paddingHorizontal: 5,
+    alignItems: 'center',
+    // backgroundColor: '#eeeeee',
+    borderWidth: 2,
+    borderRadius: 10,
+    paddingVertical: 10,
+  },
+
+  pp: {
+
+  },
+  cred: {
+    marginLeft: 20,
+    // justifyContent: 'center',
+  },
+
   text: {
     fontFamily: 'Sofia',
-    fontSize: 20,
-    marginBottom: 10,
+    fontSize: 15,
+    // marginBottom: 10,
+  },
+  bold: {
+    fontFamily: 'SofiaProBold',
   },
 
   bc: {

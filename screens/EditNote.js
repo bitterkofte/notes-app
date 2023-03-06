@@ -8,23 +8,39 @@ import { db } from '../firebase';
 import ColorPalette from '../components/ColorPalette';
 
 const EditNote = ({route, navigation}) => {
-  const [title, setTitle] = useState(route.params.t);
-  const [details, setDetails] = useState(route.params.d);
+  const {t,d,time,docId} = route.params;
+  const [title, setTitle] = useState(t);
+  const [details, setDetails] = useState(d);
 
-  const { color } = useSelector((state) => state.colorizer);
+  const [user, setUser] = useState([])
+
+  useEffect(()=>{
+    const subscriber = onSnapshot(q, (snapshot) => {
+      snapshot.docs.forEach(doc => {
+        setUser({...doc.data(), id: doc.id});
+      });
+      
+      setLoading(false);
+    });
+    return () => subscriber();
+  },[user])
+
+  function isThisNote(note) {
+    return note.time === time;
+  }
+  console.log(notes.find(isThisNote));
+  let inx = notes.indexOf(notes.find(isThisNote))
+  // console.log('Doc',t);
 
   const saveHandler = async () => {
     try{
-      let docRef = doc(db, 'notes', route.params.id)
-  
+      let docRef = doc(db, 'users', docId)
       await updateDoc(docRef, {
-        title: title,
-        details: details,
-        color: color,
+        notes,
       })
       .then(() => {
+        console.log('UPDATED')
         navigation.pop(2);
-        // navigation.navigate('ViewNote', {id: route.params.id});
       })
     } catch (err) {
       console.error(err);

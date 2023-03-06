@@ -11,43 +11,46 @@ import IconButton from '../components/IconButton';
 
 const Notes = ({navigation}) => {
     // const [notes, setNotes] = useState([]);
+    // const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [value, setValue] = useState('');
-
-    const [users, setUsers] = useState([]);
     const [user, setUser] = useState([]);
-    const [data, setData] = useState([]);
-    // const [zaman, setZaman] = useState(0);
+    
+    let arr = user.notes;
 
     function changeOrder(o) {
       setValue(o);
-      // console.log(o, 'hasan');
+      arr = user.notes;
+      switch (o) {
+        case 'titleA':
+          console.log('titleA');
+          console.log(user.name)
+          break;
+        case 'titleD':
+          console.log('titleD');
+          console.log(user.email)
+          break;
+        case 'timeA':
+          arr.sort((a,b)=> a.time - b.time);
+          console.log('Artan: ', arr);
+          break;
+        case 'timeD':
+          arr.sort((a,b)=> b.time - a.time);
+          console.log('Azalan: ', arr);
+          break;
+  
+        default:
+          console.log('empty');
+      }
     }
-    // let zaman = user.notes.time;
-    // let q = query(colRef, orderBy('title', 'asc'));
 
-    // switch (value) {
-    //   case 'titleA':
-    //     q = query(colRef, orderBy('title', 'asc'));
-    //     break;
-    //   case 'titleD':
-    //     q = query(colRef, orderBy('title', 'desc'));
-    //     break;
-    //   case 'timeA':
-    //     let sonuc = zaman.sort((a,b)=> a.time - b.time);
-    //     console.log(sonuc);
-    //     break;
-    //   case 'timeD':
-    //     zaman.sort((a,b)=> b.time - a.time);
-    //     break;
-
-    //   default:
-    //     // q = query(colRef, orderBy('title', 'asc'));
-    // }
+    function goToUserScreen() {
+      navigation.navigate('User', {user: {email: user.email, name: user.name, notes: user.notes}});
+    }
 
     useLayoutEffect(() => {
       navigation.setOptions({
-        headerRight: () => {return <IconButton name="account-circle" size={35} onPress={()=>navigation.navigate('User', {email: user.email})}/>},
+        headerRight: () => {return <IconButton name="account-circle" size={35} onPress={goToUserScreen}/>},
         headerLeft: () => {return <IconButton name="arrow-circle-down" size={35} onPress={recieve}/>}
       });
     }, [navigation, ])
@@ -59,6 +62,7 @@ const Notes = ({navigation}) => {
         snapshot.docs.forEach(doc => {
           setUser({...doc.data(), id: doc.id});
         });
+        
         setLoading(false);
       });
       return () => subscriber();
@@ -75,42 +79,6 @@ const Notes = ({navigation}) => {
         setLoading(false);
       // });
     }
-
-
-    // useEffect(() => {
-    //     const subscriber = onSnapshot(q, (snapshot) => {
-    //         const notes = [];
-      
-    //         snapshot.docs.forEach(doc => {
-    //           notes.push({...doc.data(), id: doc.id});
-    //         });
-      
-    //         setNotes(notes);
-    //         setLoading(false);
-    //       });
-      
-    //     // Unsubscribe from events when no longer in use
-    //     return () => subscriber();
-    //   }, [value]);
-
-
-    // //GETTING USER DATA
-    // useEffect(() => {
-    //   const subscriber = onSnapshot(q, (snapshot) => {
-    //       snapshot.docs.forEach(doc => {
-    //         setUser({...doc.data(), id: doc.id});
-    //       });
-    //       // setUsers(user);
-    //       // setData(users[0].notes);
-    //       // console.log('data: ',users[0]);
-    //       // users.map((a)=>console.log('KK: ',a));
-    //       console.log('not: ',user);
-    //       setLoading(false);
-    //     });
-
-    //   // Unsubscribe from events when no longer in use
-    //   return () => subscriber();
-    // }, [user]);
     
     if (loading) {
         return <ActivityIndicator style={{flex:1, justifyContent: 'center', alignItems: 'center'}} size="large" color="#0000ff" />;
@@ -121,7 +89,7 @@ const Notes = ({navigation}) => {
     }
 
     function renderTile({item}) {
-        function pressHandler() {navigation.navigate("ViewNote", {noteId: item.id, t: item.title, d: item.details, time: item.createdAt});}
+        function pressHandler() {navigation.navigate("ViewNote",  {t: item.title, d: item.details, time: item.time, docId: user.id});}
         // console.log(item.title);
         return <NoteTile 
                 title={item.title}
@@ -133,18 +101,17 @@ const Notes = ({navigation}) => {
       <View style={styles.flatlistContainer}>
 
         <View style={styles.headerContainer}>
-          <Text style={styles.header}>Welcome</Text>
+          <Text style={styles.header}>Welcome {user.name}</Text>
           <View style={styles.pickerContainer}>
             <Picker changeOrder={changeOrder} />
           </View>
         </View>
-
-        <FlatList data={user.notes}
-          keyExtractor={(item) => item.id}
+        <FlatList data={arr}
+          keyExtractor={(item) => item.time}
           renderItem={renderTile}
           numColumns={2}
           style={styles.flatlist} />
-          
+        {/* <View><Text>{arr.map((i)=> <Text key={i.time}>{i.title} - </Text>)}</Text></View> */}
         <View style={styles.buttonContainer}>
           <Pressable android_ripple={{color: '#d9d9d9'}} onPress={addHandler}>
             <MaterialIcons style={styles.icon} name='add' size={40}/>
