@@ -47,7 +47,7 @@ const ViewNote = ({route, navigation}) => {
         </View>
 
         {/* MODAL */}
-        <FancyAlert visible={visible} visibility={visibility} id={time} />
+        <FancyAlert visible={visible} visibility={visibility} id={time} docId={docId} />
         <View style={styles.bottomContainer}>
           <View style={styles.deleteContainer}>
             <Pressable android_ripple={{color: '#d9d9d9'}} onPress={() =>  visibility(true)}>

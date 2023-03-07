@@ -68,7 +68,7 @@ const AddNote = ({navigation, route}) => {
     })
     .then(() => {
       console.log('UPDATED')
-      navigation.navigate('Notes');
+      navigation.navigate('Notes', {updated: true});
     })
   }
 

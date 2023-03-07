@@ -1,19 +1,52 @@
 import { StyleSheet, Text, View, Modal, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
-import { doc, deleteDoc } from 'firebase/firestore'
-import { db } from '../firebase';
+import { doc, deleteDoc, query, onSnapshot, where, updateDoc } from 'firebase/firestore'
+import { auth, collUser, db } from '../firebase';
 
-const FancyAlert = ({visible, visibility, id}) => {
+const FancyAlert = ({ visible, visibility, id, docId}) => {
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
 
-  function deleteHandler() {
-    const docRef = doc(db, 'notes', id)
+  const [user, setUser] = useState([])
+  const q = query(collUser, where("email", "==", auth.currentUser.email))
 
-  deleteDoc(docRef)
-    .then(() => {
-      navigation.navigate('Notes');
-    })
+  // function deleteHandler() {
+  //   const docRef = doc(db, 'notes', id)
+
+  // deleteDoc(docRef)
+  //   .then(() => {
+  //     navigation.navigate('Notes');
+  //   })
+  // }
+
+  useEffect(()=>{
+    const subscriber = onSnapshot(q, (snapshot) => {
+      snapshot.docs.forEach(doc => {
+        setUser({...doc.data(), id: doc.id});
+      });
+      setLoading(false);
+    });
+    return () => subscriber();
+  },[loading])
+
+  const deleteHandler = async () => {
+    let inventory = [...user.notes];
+    try{
+      let inx = user.notes.indexOf(inventory.find((i)=> i.time === id))
+      inventory.splice(inx,1)
+      // console.log('DEL:  ',inventory)
+      let docRef = doc(db, 'users', docId)
+      await updateDoc(docRef, {
+        notes: inventory,
+      })
+      .then(() => {
+        console.log('UPDATED')
+        navigation.navigate('Notes', {updated: true});
+      })
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   // console.log(id);

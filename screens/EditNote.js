@@ -1,46 +1,56 @@
 import { StyleSheet, Text, View, Pressable, TextInput } from 'react-native'
 import { Entypo } from '@expo/vector-icons'; 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { doc, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
+import { auth, collUser, db } from '../firebase';
 import ColorPalette from '../components/ColorPalette';
 
 const EditNote = ({route, navigation}) => {
   const {t,d,time,docId} = route.params;
   const [title, setTitle] = useState(t);
   const [details, setDetails] = useState(d);
+  const [loading, setLoading] = useState(true);
 
   const [user, setUser] = useState([])
-
+  const q = query(collUser, where("email", "==", auth.currentUser.email))
   useEffect(()=>{
     const subscriber = onSnapshot(q, (snapshot) => {
       snapshot.docs.forEach(doc => {
         setUser({...doc.data(), id: doc.id});
       });
-      
       setLoading(false);
+      // console.log(user);
+      // function isThisNote(note) {
+      //   return note.time === time;
+      // }
+      
+      // console.log('AAAAAA: ',inventory)
+      // console.log(inventory.find((i)=> i.time === time));
+      
+      // console.log('index: ', inx)
+      
     });
     return () => subscriber();
-  },[user])
+  },[loading])
 
-  function isThisNote(note) {
-    return note.time === time;
-  }
-  console.log(notes.find(isThisNote));
-  let inx = notes.indexOf(notes.find(isThisNote))
   // console.log('Doc',t);
 
   const saveHandler = async () => {
+    let inventory = [...user.notes];
     try{
+      // console.log('AAAAAA: ',inventory)
+      let inx = user.notes.indexOf(inventory.find((i)=> i.time === time))
+      inventory[inx] = {title: title, details: details, time: time}
+      // console.log(inventory)
       let docRef = doc(db, 'users', docId)
       await updateDoc(docRef, {
-        notes,
+        notes: inventory,
       })
       .then(() => {
         console.log('UPDATED')
-        navigation.pop(2);
+        navigation.navigate('Notes', {updated: true});
       })
     } catch (err) {
       console.error(err);

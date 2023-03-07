@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, View, ActivityIndicator, ScrollView, Pressable } from 'react-native'
+import { FlatList, StyleSheet, Text, View, ActivityIndicator, ScrollView, Pressable, Button } from 'react-native'
 import React, { useState, useEffect, useLayoutEffect } from 'react'
 import { MaterialIcons } from '@expo/vector-icons'; 
 
@@ -9,51 +9,64 @@ import NoteTile from '../components/NoteTile';
 import Picker from '../components/Picker';
 import IconButton from '../components/IconButton';
 
-const Notes = ({navigation}) => {
+const Notes = ({navigation, route}) => {
     // const [notes, setNotes] = useState([]);
     // const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [value, setValue] = useState('');
     const [user, setUser] = useState([]);
+    const [newO, setNewO] = useState([]);
     
-    let arr = user.notes;
+    useEffect(() => {
+      if (route.params?.updated) {
+        setLoading(true);
+        // console.log('--------GÜNCELLENDİ--------')
+        // changeOrder();
+        route.params.updated = false;
+      }
+    }, [route.params?.updated]);
 
     function changeOrder(o) {
       setValue(o);
-      arr = user.notes;
+      const sortedArr = [...user.notes]; // make a clone of the original array
+      // console.log('Before: ',user.notes);
       switch (o) {
         case 'titleA':
           console.log('titleA');
-          console.log(user.name)
+          // console.log(user.name)
           break;
         case 'titleD':
           console.log('titleD');
-          console.log(user.email)
+          // console.log(user.email)
           break;
         case 'timeA':
-          arr.sort((a,b)=> a.time - b.time);
-          console.log('Artan: ', arr);
+          sortedArr.sort((a,b)=> a.time - b.time);
+          // console.log('Artan: ', sortedArr);
           break;
         case 'timeD':
-          arr.sort((a,b)=> b.time - a.time);
-          console.log('Azalan: ', arr);
+          sortedArr.sort((a,b)=> b.time - a.time);
+          // console.log('Azalan: ', sortedArr);
           break;
   
         default:
           console.log('empty');
       }
+      setNewO({...user, notes: sortedArr});
+      // console.log('After: ',newO.notes);
     }
 
-    function goToUserScreen() {
+    async function goToUserScreen() {
+      console.log('ÖNEMLİ: ',user.email);
       navigation.navigate('User', {user: {email: user.email, name: user.name, notes: user.notes}});
     }
 
     useLayoutEffect(() => {
       navigation.setOptions({
         headerRight: () => {return <IconButton name="account-circle" size={35} onPress={goToUserScreen}/>},
+        // headerRight: () => {return <Button title="user" onPress={goToUserScreen}/>},
         headerLeft: () => {return <IconButton name="arrow-circle-down" size={35} onPress={recieve}/>}
       });
-    }, [navigation, ])
+    }, [navigation, goToUserScreen])
 
     const q = query(collUser, where("email", "==", auth.currentUser.email))
 
@@ -62,11 +75,11 @@ const Notes = ({navigation}) => {
         snapshot.docs.forEach(doc => {
           setUser({...doc.data(), id: doc.id});
         });
-        
+        console.log('!!!',user);
         setLoading(false);
       });
       return () => subscriber();
-    },[user])
+    },[loading])
 
     function recieve() {
       console.log('User: ',auth.currentUser.email)
@@ -106,7 +119,7 @@ const Notes = ({navigation}) => {
             <Picker changeOrder={changeOrder} />
           </View>
         </View>
-        <FlatList data={arr}
+        <FlatList data={newO.notes}
           keyExtractor={(item) => item.time}
           renderItem={renderTile}
           numColumns={2}

@@ -16,7 +16,7 @@ const User = ({navigation, route}) => {
       navigation.navigate('SignIn')
     })
     .catch(err => {
-      // console.log(err.message)
+      console.log(err.message)
     })
   }
 
